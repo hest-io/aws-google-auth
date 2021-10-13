@@ -39,6 +39,8 @@ class Configuration(object):
         self.quiet = False
         self.bg_response = None
         self.account = ""
+        self.output = None
+        self.no_update_credentials = False
 
     # For the "~/.aws/config" file, we use the format "[profile testing]"
     # for the 'testing' profile. The credential file will just be "[testing]"

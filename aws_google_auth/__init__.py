@@ -39,7 +39,7 @@ def parse_args(args):
     parser.add_argument('--bg-response', help='Override default bgresponse challenge token.')
     parser.add_argument('--saml-assertion', dest="saml_assertion", help='Base64 encoded SAML assertion to use.')
     parser.add_argument('--no-cache', dest="saml_cache", action='store_false', help='Do not cache the SAML Assertion.')
-    parser.add_argument('--credentials-update', dest="credentials_update", action='store_true', help='Update the default AWS credentials file.')
+    parser.add_argument('--no-credentials-update', dest="no_update_credentials", action='store_true', help='Do not update the default AWS credentials file.')
     parser.add_argument('--print-creds', action='store_true', help='Print Credentials.')
     parser.add_argument('--resolve-aliases', action='store_true', help='Resolve AWS account aliases.')
     parser.add_argument('--save-failure-html', action='store_true', help='Write HTML failure responses to file for troubleshooting.')
@@ -186,9 +186,9 @@ def resolve_config(args):
         args.output,
         config.output)
 
-    config.update_credentials = bool(coalesce(
-        args.update_credentials,
-        config.update_credentials))
+    config.no_update_credentials = bool(coalesce(
+        args.no_update_credentials,
+        config.no_update_credentials))
 
     # Quiet
     config.quiet = coalesce(
@@ -291,7 +291,7 @@ def process_auth(args, config):
     if config.print_creds:
         amazon_client.print_export_line()
 
-    if config.profile and config.update_credentials:
+    if config.profile and config.no_update_credentials == False:
         config.write(amazon_client)
 
     if config.output:
