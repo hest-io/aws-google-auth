@@ -35,9 +35,11 @@ def parse_args(args):
     parser.add_argument('-A', '--account', help='Filter for specific AWS account.')
     parser.add_argument('-D', '--disable-u2f', action='store_true', help='Disable U2F functionality.')
     parser.add_argument('-q', '--quiet', action='store_true', help='Quiet output')
+    parser.add_argument('-o', '--output', help='Write Credentials to file.')
     parser.add_argument('--bg-response', help='Override default bgresponse challenge token.')
     parser.add_argument('--saml-assertion', dest="saml_assertion", help='Base64 encoded SAML assertion to use.')
     parser.add_argument('--no-cache', dest="saml_cache", action='store_false', help='Do not cache the SAML Assertion.')
+    parser.add_argument('--credentials-update', dest="credentials_update", action='store_true', help='Update the default AWS credentials file.')
     parser.add_argument('--print-creds', action='store_true', help='Print Credentials.')
     parser.add_argument('--resolve-aliases', action='store_true', help='Resolve AWS account aliases.')
     parser.add_argument('--save-failure-html', action='store_true', help='Write HTML failure responses to file for troubleshooting.')
@@ -180,6 +182,14 @@ def resolve_config(args):
         args.print_creds,
         config.print_creds)
 
+    config.output = coalesce(
+        args.output,
+        config.output)
+
+    config.update_credentials = bool(coalesce(
+        args.update_credentials,
+        config.update_credentials))
+
     # Quiet
     config.quiet = coalesce(
         args.quiet,
@@ -281,9 +291,14 @@ def process_auth(args, config):
     if config.print_creds:
         amazon_client.print_export_line()
 
-    if config.profile:
+    if config.profile and config.update_credentials:
         config.write(amazon_client)
 
+    if config.output:
+        # Write the updated config file
+        with open(config.output, 'w+') as f:
+            f.write(amazon_client.print_env_lines())
+            f.close()
 
 def main():
     cli_args = sys.argv[1:]

@@ -74,6 +74,22 @@ class Amazon:
 
         print(formatted)
 
+    def print_env_lines(self):
+        export_template = """
+        AWS_ACCESS_KEY_ID='{}'
+        AWS_SECRET_ACCESS_KEY='{}'
+        AWS_SESSION_TOKEN='{}'
+        AWS_SESSION_EXPIRATION='{}'"
+        """
+
+        formatted = export_template.format(
+            self.access_key_id,
+            self.secret_access_key,
+            self.session_token,
+            self.expiration.strftime('%Y-%m-%dT%H:%M:%S%z'))
+
+        print(formatted)
+
     @property
     def roles(self):
         doc = etree.fromstring(self.saml_xml)
