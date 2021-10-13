@@ -297,7 +297,7 @@ def process_auth(args, config):
     if config.output:
         # Write the updated config file
         with open(config.output, 'w+') as f:
-            f.write(amazon_client.print_env_lines())
+            f.write(amazon_client.get_env_lines())
             f.close()
 
 def main():
